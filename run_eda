@@ -1,0 +1,22 @@
+#!/bin/bash
+
+current_path=`pwd`
+cmd="$@"
+#-v ${HOME}:/home/$(id -nu $USER) \
+
+docker run -it --rm \
+       -e LOCAL_USERNAME=$(id -nu $USER) \
+       -e LOCAL_UID=$(id -u $USER) \
+       -e LOCAL_GID=$(id -g $USER) \
+       -e CURRENT_PATH=$current_path \
+       -e DISPLAY=$DISPLAY \
+       -e QT_X11_NO_MITSHM=1 \
+       --mac-address 38:f3:ab:f3:50:36 \
+       -v /tmp/.X11-unix:/tmp/.X11-unix \
+       -v /sys:/sys:ro \
+       -v /opt:/opt \
+       -v /home:/home \
+       -v /:/mnt \
+       --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+       --name="eda_docker_vm" eda_docker /bin/bash --login -c "$cmd"
+
